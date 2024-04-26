@@ -1,0 +1,85 @@
+import java.util.regex.Matcher
+
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE' // Update to the latest version
+    id 'jp.classmethod.aws.reboot.cloudformation' version '0.45'
+}
+
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+String dockerHubUsernameProperty = findProperty('dockerHubUsername') ?: 'klesio123'
+
+
+
+
+
+
+
+
+
+
+
+
+String imageName = "${dockerHubUsernameProperty}/spring-boot-api-example:${project.version }"
+
+task printVersion {
+    doLast {
+
+        println 'imagemName: '+ imageName
+        println 'project.version: '+ project.version
+
+    }
+}
+
+
+
+aws {
+    region = findProperty('region') ?: 'eu-central-1'
+}
+
+cloudFormation {
+    stackName "$project.name-stack"
+    stackParams([
+            SubnetID: findProperty('subnetId') ?: '',
+            ServiceName: project.name,
+            ServiceVersion: project.version,
+            DockerHubUsername: dockerHubUsernameProperty
+    ])
+    templateFile project.file("ecs.yml")
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+task writeDockerImageNameToFile {
+    doLast {
+        new File("$buildDir/dockerImageName.txt").text = imageName
+    }
+}
+
+
+
+
+task('doStuff', type: Copy) {
+    println 'configuring task'
+    doFirst {
+        println 'running task'
+    }
+}

@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  ServiceName:
+    Type: String
+  KmsKeyAlias:
+    Type: String
+    Default: alias/service-secrets
+    Description: Alias for the KMS key used to encrypt the secrets
+
+Resources:
+  KmsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: KMS Key for encrypting service secrets
+      KeyPolicy:
+        Version: '2012-10-17'
+        Id: kms-key-default-1
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action: kms:*
+            Resource: '*'
+          - Sid: Allow access for key administration
+            Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:Create*
+              - kms:Describe*
+              - kms:Enable*
+              - kms:List*
+              - kms:Put*
+              - kms:Update*
+              - kms:Revoke*
+              - kms:Disable*
+              - kms:Get*
+              - kms:Delete*
+              - kms:ScheduleKeyDeletion
+              - kms:CancelKeyDeletion
+            Resource: '*'
+          - Sid: Allow use of the key
+            Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:Encrypt
+              - kms:Decrypt
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey
+              - kms:GenerateDataKeyWithoutPlaintext
+            Resource: '*'
+          - Sid: Allow alias creation
+            Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:CreateAlias
+              - kms:DeleteAlias
+            Resource: '*'
+          - Sid: Allow access to the key with the key alias
+            Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:DescribeKey
+              - kms:GetKeyPolicy
+              - kms:ListAliases
+              - kms:ListKeys
+              - kms:GetAlias
+            Resource: '*'
+
+  KmsKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Ref KmsKeyAlias
+      TargetKeyId: !Ref KmsKey
+
+  ClientIdSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Client ID Secret for ${ServiceName}
+      KmsKeyId: !Ref KmsKey
+      GenerateSecretString:
+        SecretStringTemplate: '{"clientId": "yourClientId"}'
+        GenerateStringKey: "clientId"
+
+  ClientSecretSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Client Secret Secret for ${ServiceName}
+      KmsKeyId: !Ref KmsKey
+      GenerateSecretString:
+        SecretStringTemplate: '{"clientSecret": "yourClientSecret"}'
+        GenerateStringKey: "clientSecret"
+
+Outputs:
+  ClientIdSecretArn:
+    Value: !GetAtt ClientIdSecret.Arn
+    Description: ARN of the Client ID Secret
+  ClientSecretSecretArn:
+    Value: !GetAtt ClientSecretSecret.Arn
+    Description: ARN of the Client Secret Secret
