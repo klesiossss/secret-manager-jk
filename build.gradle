@@ -45,10 +45,9 @@ aws {
 cloudFormation {
     stackName "$project.name-stack"
     stackParams([
-            SubnetID: findProperty('subnetId') ?: '',
+            SubnetID: findProperty('subnetId') ?: 'subnet-0270f905ad580e53c',
             ServiceName: project.name,
-            ServiceVersion: project.version,
-            DockerHubUsername: dockerHubUsernameProperty
+            ServiceVersion: project.version
     ])
     templateFile project.file("ecs.yml")
 }
@@ -56,12 +55,6 @@ cloudFormation {
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(11)
-    }
-}
-
-task writeDockerImageNameToFile {
-    doLast {
-        new File("$buildDir/dockerImageName.txt").text = imageName
     }
 }
 
