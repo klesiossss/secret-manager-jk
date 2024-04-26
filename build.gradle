@@ -45,9 +45,7 @@ aws {
 cloudFormation {
     stackName "$project.name-stack"
     stackParams([
-            SubnetID: findProperty('subnetId') ?: 'subnet-0270f905ad580e53c',
             ServiceName: project.name,
-            ServiceVersion: project.version
     ])
     templateFile project.file("ecs.yml")
 }
