@@ -29,22 +29,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-plugins {
-    id 'java'
-    id 'maven-publish'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE' // Update to the latest version
-    id 'jp.classmethod.aws.reboot.cloudformation' version '0.45'
-}
 
-
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-
-}
 
 test {
     useJUnitPlatform()
