@@ -86,6 +86,7 @@ Resources:
         SecretStringTemplate: '{"clientId": "yourClientId"}'
         GenerateStringKey: "clientId"
 
+
   ClientSecretSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
