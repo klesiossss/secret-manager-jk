@@ -71,7 +71,7 @@ Resources:
               - kms:GetAlias
             Resource: '*'
 
-  KmsKeyAlias:
+  AliasForKmsKey:
     Type: AWS::KMS::Alias
     Properties:
       AliasName: !Ref KmsKeyAlias
