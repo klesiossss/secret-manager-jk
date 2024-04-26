@@ -86,7 +86,6 @@ Resources:
         SecretStringTemplate: '{"clientId": "yourClientId"}'
         GenerateStringKey: "clientId"
 
-
   ClientSecretSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -95,11 +94,3 @@ Resources:
       GenerateSecretString:
         SecretStringTemplate: '{"clientSecret": "yourClientSecret"}'
         GenerateStringKey: "clientSecret"
-
-Outputs:
-  ClientIdSecretArn:
-    Value: !GetAtt ClientIdSecret.Arn
-    Description: ARN of the Client ID Secret
-  ClientSecretSecretArn:
-    Value: !GetAtt ClientSecretSecret.Arn
-    Description: ARN of the Client Secret Secret
